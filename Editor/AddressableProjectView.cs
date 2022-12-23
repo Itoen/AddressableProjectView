@@ -47,7 +47,7 @@ public static class AddressableProjectView
 
     private static Color GetDrawColor(BundledAssetGroupSchema groupSchema)
     {
-        if (_colorSetting == null)
+        if (_colorSetting == null || AddressableAssetSettingsDefaultObject.Settings == null)
         {
             return Color.clear;
         }
