@@ -8,4 +8,6 @@ sealed class ColorSetting : ScriptableObject
     internal Color LocalLoadColor = Color.green;
 
     internal Color ExcludeBuildColor = Color.red;
+    
+    internal Color OtherRegisteredColor = Color.clear;
 }

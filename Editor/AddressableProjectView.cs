@@ -52,7 +52,7 @@ public static class AddressableProjectView
             return Color.clear;
         }
         
-        var color = Color.clear;
+        Color color;
 
         var pathName = groupSchema.LoadPath.GetName(AddressableAssetSettingsDefaultObject.Settings);
         if (!groupSchema.IncludeInBuild)
@@ -66,6 +66,10 @@ public static class AddressableProjectView
         else if (pathName == AddressableAssetSettings.kLocalLoadPath)
         {
             color = _colorSetting.LocalLoadColor;
+        }
+        else
+        {
+            color = _colorSetting.OtherRegisteredColor;
         }
 
         // projectWindowItemOnGUIのタイミングの関係上アイコン・ラベルの上に描画する為、透過する
