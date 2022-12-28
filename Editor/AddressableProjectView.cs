@@ -7,16 +7,23 @@ using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 [InitializeOnLoad]
 public static class AddressableProjectView
 {
-    private static ColorSetting _colorSetting;
+    private static Setting _setting;
+    
+    
     
     static AddressableProjectView()
     {
         EditorApplication.projectWindowItemOnGUI += OnGUIProjectView;
-        _colorSetting = LoadColorSetting();
+        _setting = LoadColorSetting();
     }
 
-    internal static ColorSetting LoadColorSetting()
+    internal static Setting LoadColorSetting()
     {
+        if (EditorApplication.isCompiling)
+        {
+            return null;
+        }
+        
         var guids = AssetDatabase.FindAssets ("t:ColorSetting");
         if (guids.Length == 0)
         {
@@ -25,7 +32,7 @@ public static class AddressableProjectView
         }
 
         var path = AssetDatabase.GUIDToAssetPath(guids[0]);
-        return AssetDatabase.LoadAssetAtPath<ColorSetting>(path);
+        return AssetDatabase.LoadAssetAtPath<Setting>(path);
     }
 
     private static void OnGUIProjectView(string guid, Rect rect)
@@ -41,35 +48,37 @@ public static class AddressableProjectView
         {
             return;
         }
-        
+
         EditorGUI.DrawRect(rect, GetDrawColor(groupSchema));
     }
 
     private static Color GetDrawColor(BundledAssetGroupSchema groupSchema)
     {
-        if (_colorSetting == null || AddressableAssetSettingsDefaultObject.Settings == null)
+        if (_setting == null || AddressableAssetSettingsDefaultObject.Settings == null)
         {
             return Color.clear;
         }
         
         Color color;
 
+        var a = AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetAllProfileNames();
+
         var pathName = groupSchema.LoadPath.GetName(AddressableAssetSettingsDefaultObject.Settings);
         if (!groupSchema.IncludeInBuild)
         {
-            color = _colorSetting.ExcludeBuildColor;
+            color = _setting.ExcludeBuildColor;
         }
-        else if( pathName == AddressableAssetSettings.kRemoteLoadPath)
+        else if( pathName == _setting.RemoteLoadPathName)
         {
-            color = _colorSetting.RemoteLoadColor;
+            color = _setting.RemoteLoadColor;
         }
-        else if (pathName == AddressableAssetSettings.kLocalLoadPath)
+        else if (pathName == _setting.LocalLoadPathName)
         {
-            color = _colorSetting.LocalLoadColor;
+            color = _setting.LocalLoadColor;
         }
         else
         {
-            color = _colorSetting.OtherRegisteredColor;
+            color = _setting.OtherRegisteredColor;
         }
 
         // projectWindowItemOnGUIのタイミングの関係上アイコン・ラベルの上に描画する為、透過する
